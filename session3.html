@@ -1,0 +1,122 @@
+session3.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>PHYSCI 70: Intro to Digital Fabrication </title>
+  <meta charset="utf-8">
+  <link href="./style.css" rel="stylesheet">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/arduino-light.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/arduino.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script> 
+
+</head>
+<body>
+
+
+<xmp theme="journal" style="display:none;">
+
+An Attempt at Mexican Light Design
+
+Okay so, normally my plan with the arduino design included my previous project which was to make it change direction or make it faster, but do to some unfortunate circumstances such as the belt not wrapping around the track correctly, a problem with attaching the motor the wrong way and confusing lab hours on 4th of july that was not indeed what happened - as I detailed explained during last sessions log - so I thought to myself hey maybe I can fix this but I currently cannot go to the lab so I should do something that will completely my race track for formula 1 which is where the audience comes in.
+
+Now designing an actual set of audiences would take a lot of hot glue and and cardboard so I thought to myself whether there was anyone out there who made leds on arduino look like mexican lights, and at first glance it seemed to me as there wasn't which was deeply dissapointing considering I didn't have much experience with coding microcontrollers so having an example I could try to base mine of would've been great, finding nothing on youtube I research for project hub.
+
+Now Project Hub is where people with arduinoes come together to post their projects for others to see and help others get into electronics and to my like the project hub user @stannano did me a great favor by making a beginner tutorial for mexican wave led design so my credits go to them dearly in this project as their code guided me. I hope that is okay with the class and if not I can try doing something else. 
+
+So Their Code was like this: - I hope the code snippets work -
+
+<pre><code class="language-arduino">
+
+</code></pre> 
+
+int ledCount = 5;
+int leds[] = {13, 12, 11, 10, 9};
+int currentState[] = {HIGH, LOW, LOW, LOW, LOW};
+int currentHighLed = 0;
+
+void setup() {
+for (int i = 0; i < ledCount; i++) {
+pinMode(leds[i], OUTPUT);
+}
+}
+
+void loop() {
+
+for (int i = 0; i < ledCount; i++) {
+digitalWrite(leds[i], currentState[i]);
+}
+currentState[currentHighLed] = LOW;
+currentHighLed++;
+if (currentHighLed >= 5) {
+currentHighLed = 0;
+}
+currentState[currentHighLed] = HIGH;
+delay(500);
+}
+</code></pre> 
+
+
+Now I wanted to rewrite this code myself so I did some research on how arduinos are normally coded, it is mostly similar - very much - because honestly when I tried writing it without functions I was always making mistakes also I think it took to long defining all of them one by one as I saw other people did for coding for one led, since there is more of them here what I realized was there was a function needed, I think. 
+
+![image of youtube dude](./arduinoguy.png)
+![image of youtube dude](./arduinoguy1.png)
+![image of google ](./arduinopicture.png)
+
+<pre><code class="language-arduino">
+int led1 = 10;
+int led2 = 11;
+int led3 = 12;
+int led4 = 13;
+int led5 = 14;
+int currentState[] = {HIGH, LOW, LOW, LOW, LOW}; //what i realized that the sample code did correctly was when I first tried it is that you have to define everything that is plugged into the code
+int currentHighLed = 0;
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(led1, OUTPUT);  // We define every led here, to my understading and what they are supposed to put out which in this case is turning light into heat hence output
+  pinMode(led2, OUTPUT);
+  pinMode(led3, OUTPUT);
+  pinMode(led4, OUTPUT);
+  pinMode(led5, OUTPUT);
+  for (int i = 0; i < ledCount; i++) { // this is where the systme of loops start making sense and it goes one by one
+pinMode(leds[i], OUTPUT);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+for (int i = 0; i < ledCount; i++) { // so in coding loops can help make everything so much more efficient by making a system where with every loop done you can move to the next by assigning i to the first one and i + 1 and so forth
+digitalWrite(leds[i], currentState[i]);
+}
+currentState[currentHighLed] = LOW;
+currentHighLed++;
+if (currentHighLed >= 5) {
+currentHighLed = 0;
+}
+currentState[currentHighLed] = HIGH; // the loop system helps for all of them to go one by one instead of making them go all at the same time
+delay(500);
+}
+ 
+</code></pre> 
+
+I tried my best in explaing everything the best of my abilities and here is a very bad design attempt of the circuit
+
+![image of circuit](./circuittry.png)
+
+Back home we needed to build an electronics design for our robot for the competition and we mostly used windows computers because of our design being in Solidworks which is only supported by windows computers - which is a great shame considering it is the best cad program that I can think of - anyway we always used altium hence lookinfg at flastad was a bit different considering most names - we do it in turkish - and looks were different - it is 3d there - I was a bit confused but I will try again when I get to a windows computer to do the same thing with altium.
+
+Here is a picture of how the circuit system has to be physically set up
+
+![image of arduino](./circuit.png)
+
+Since the lab was closed and I was having technical difficulties with my previous session's I didn't get to test it out, however I will try that as soon as I can and report more here.
+
+
+
+</xmp>
+</body>
+
+<script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" ></script>
+
+</html>
