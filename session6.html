@@ -1,0 +1,141 @@
+session6.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>PHYSCI 70: Intro to Digital Fabrication </title>
+  <meta charset="utf-8">
+  <link href="./style.css" rel="stylesheet">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/arduino-light.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/arduino.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script> 
+
+</head>
+<body>
+
+
+<xmp theme="journal" style="display:none;">
+
+### Electronic Input Devices
+
+So the assignment for this week included a making a capacitive sensor and a kit sensor.
+
+So the story starts with me misunderstanding the assignment, for the reason that the link that led to the way capacitive sensors worked did not the first time. Which led me to many different ways people set up their capacitive sensors. The thing that I recognized - which was something that I should've realized sooner - that not every piece that looks like another piece is that piece. The types of sensors that I saw included: a penny one, electronic paint - apperantly that is a thing -, and one that claimed to be made with 1$ and aluminum.
+
+In the end, Abi came to my rescue by showing me the page that was on the website and this time the link opened so I could just follow the link. So the thing that I realized that was the sensor works so much better when the insulator is thicker - as shown in the picture - so I used foam. 
+
+![image of cap sensor](./sensorcap.png)
+![image of cap sensor](./sensorcap1.png)
+![image of cap sensor](./serialmonitor.png)
+![image of cap sensor](./graph.png)
+![image of cap sensor](./graph1.png)
+![image of cap sensor](./graph2.png)
+![image of cap sensor](./graph3.png)
+
+Trying the graph out, the highes I could push it to was 5 but when Suvin tried, it got to 6 most. 
+
+<pre><code class="language-arduino">
+
+int analog_pin = A3;
+int tx_pin = 4;
+int read_high;
+int read_low;
+int diff; 
+
+void setup() {
+    pinMode(tx_pin, OUTPUT);      // Pin 4 provides the voltage step
+    Serial.begin(9600);
+}
+
+void loop() {
+    digitalWrite(tx_pin,HIGH);           // Step the voltage high on conductor 1.
+    read_high = analogRead(analog_pin);  // Measure response of conductor 2.
+    delayMicroseconds(100);              // Delay to reach steady state.
+    digitalWrite(tx_pin,LOW);            // Step the voltage to zero on conductor 1.
+    read_low = analogRead(analog_pin);   // Measure response of conductor 2.
+    diff = read_high - read_low;         // desired answer is the difference between high and low.
+    Serial.println(diff);
+}
+</code></pre> 
+
+I used the same code that Nathan used.
+
+### The Kit Sensor
+
+So for the kit I chose a tempreture sensor. And I wanted to find a circuit design I could use, for that I used: https://www.circuitbasics.com/arduino-thermistor-temperature-sensor-tutorial/
+This website gives a detailed explanation about what a tempreture sensor is and how to make a basic one.
+
+![image of temp sensor](./tempwebsite.png)
+![image of temp sensor](./tempcircuit.png)
+
+So I followed the same system
+
+![image of temp sensor](./tempraturesensor.png)
+![image of temp sensor](./tempsensor.png)
+
+Which gave me the data
+
+![image of temp sensor](./temprature.png)
+![image of temp sensor](./tempgraph.png)
+![image of temp sensor](./tempgraph1.png)
+
+<video controls>
+<source src="sensors.mp4" type="video/mp4">
+</video> 
+
+<video controls>
+<source src="graphs.mp4" type="video/mp4">
+</video> 
+
+To get the extremes, me, Suvin and Emma had this idea to use hot and cold towels from the sink. So that is what I tried first
+
+![image of temp sensor](./towel.png)
+
+I tried to out it next to it, touch it, under it but the data set did not change. So I thought I could try to out a fan next to it with my friend but the most we could change it was a Farhenheit.
+
+So I was going to use my friend's fridge but my friend has left and I couldn't get to the dorm. And I don't own a microfridge.
+
+So the code that was used was
+
+<pre><code class="language-arduino">
+
+int ThermistorPin = 0;
+int Vo;
+float R1 = 10000;
+float logR2, R2, T;
+float c1 = 1.009249522e-03, c2 = 2.378405444e-04, c3 = 2.019202697e-07;
+
+void setup() {
+Serial.begin(9600);
+}
+
+void loop() {
+
+  Vo = analogRead(ThermistorPin);
+  R2 = R1 * (1023.0 / (float)Vo - 1.0);
+  logR2 = log(R2);
+  T = (1.0 / (c1 + c2*logR2 + c3*logR2*logR2*logR2));
+  T = T - 273.15;
+  T = (T * 9.0)/ 5.0 + 32.0; 
+
+  Serial.print("Temperature: "); 
+  Serial.print(T);
+  Serial.println(" F"); 
+
+  delay(5000);
+}
+</code></pre> 
+
+I found code this code from the website as well. As an example.
+
+
+![image of temp sensor](./excel.png)
+
+
+</xmp>
+</body>
+
+<script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" ></script>
+
+</html>
