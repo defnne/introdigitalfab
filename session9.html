@@ -1,0 +1,251 @@
+session9.html
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>PHYSCI 70: Intro to Digital Fabrication </title>
+  <meta charset="utf-8">
+  <link href="./style.css" rel="stylesheet">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/arduino-light.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/arduino.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script> 
+
+</head>
+<body>
+
+
+<xmp theme="journal" style="display:none;">
+
+### Wifi, Bluetooth and Iot Devices
+
+So for this week's project we were tasked to with:
+
+Control a board from a local wireless network. Program a microcontroller to obtain and respond to information from the internet. Optionally, work with a partner to control a device over a remote server.
+
+When I first read that I was unsure on what I wanted to do I had this idea of a buzzer that would help with house plants based on the temprature conditions because I come from a place where there is Mediterrenean weather and climate conditions so there is a very specific list of plants that can grow in these conditions.
+
+But then I got a text from my friend Aubrey who was asking if I wanted to collaborate on the project and I accepted. So the idea that we came up with was basically a security camera that is web controlled - so like any other current security camera I don't know why I specified that - , now I thought that visual sensors would also help with my final project regarding house plants so I was happy to work with it.
+
+Now the tutorial we followed was made by random nerd tutorials which was recommended in Nathan's website.
+
+Now there are many tutorials on regarding building a security camera and I will be linking the one from Random Nerd here:
+
+https://randomnerdtutorials.com/esp32-cam-video-streaming-web-server-camera-home-assistant/
+
+So the code we based it of on is also there, we used Aubrey's computer to write it because I was having trouble with mine since session 7 when my Arduino IDE crashed and I had to switch to Arduino Cloud which is a weird process that usually ends up with many errors, I highly recommend to anyone who can to use Arduino IDE instead of Arduino Cloud because it really does not work that well.
+
+![image of camera](./camerasetup.png)
+
+So this is our set-up
+
+![image of camera](./cameraesp.png)
+
+this is how we wired the esp32 
+
+![image of camera](./cameracode.png)
+
+and this is our code
+
+Here is the code we used:
+
+
+<pre><code class="language-arduino">
+
+#include "esp_camera.h"
+#include <WiFi.h>
+
+//
+// WARNING!!! PSRAM IC required for UXGA resolution and high JPEG quality
+//            Ensure ESP32 Wrover Module or other board with PSRAM is selected
+//            Partial images will be transmitted if image exceeds buffer size
+//
+//            You must select partition scheme from the board menu that has at least 3MB APP space.
+//            Face Recognition is DISABLED for ESP32 and ESP32-S2, because it takes up from 15 
+//            seconds to process single frame. Face Detection is ENABLED if PSRAM is enabled as well
+
+// ===================
+// Select camera model
+// ===================
+//#define CAMERA_MODEL_WROVER_KIT // Has PSRAM
+//#define CAMERA_MODEL_ESP_EYE // Has PSRAM
+//#define CAMERA_MODEL_ESP32S3_EYE // Has PSRAM
+//#define CAMERA_MODEL_M5STACK_PSRAM // Has PSRAM
+//#define CAMERA_MODEL_M5STACK_V2_PSRAM // M5Camera version B Has PSRAM
+//#define CAMERA_MODEL_M5STACK_WIDE // Has PSRAM
+//#define CAMERA_MODEL_M5STACK_ESP32CAM // No PSRAM
+//#define CAMERA_MODEL_M5STACK_UNITCAM // No PSRAM
+#define CAMERA_MODEL_AI_THINKER // Has PSRAM
+//#define CAMERA_MODEL_TTGO_T_JOURNAL // No PSRAM
+// ** Espressif Internal Boards **
+//#define CAMERA_MODEL_ESP32_CAM_BOARD
+//#define CAMERA_MODEL_ESP32S2_CAM_BOARD
+//#define CAMERA_MODEL_ESP32S3_CAM_LCD
+
+#include "camera_pins.h"
+
+// ===========================
+// Enter your WiFi credentials
+// ===========================
+const char* ssid = "defnes phone";
+const char* password = "12345678";
+
+void startCameraServer();
+
+void setup() {
+  Serial.begin(115200);
+  Serial.setDebugOutput(true);
+  Serial.println();
+
+  camera_config_t config;
+  config.ledc_channel = LEDC_CHANNEL_0;
+  config.ledc_timer = LEDC_TIMER_0;
+  config.pin_d0 = Y2_GPIO_NUM;
+  config.pin_d1 = Y3_GPIO_NUM;
+  config.pin_d2 = Y4_GPIO_NUM;
+  config.pin_d3 = Y5_GPIO_NUM;
+  config.pin_d4 = Y6_GPIO_NUM;
+  config.pin_d5 = Y7_GPIO_NUM;
+  config.pin_d6 = Y8_GPIO_NUM;
+  config.pin_d7 = Y9_GPIO_NUM;
+  config.pin_xclk = XCLK_GPIO_NUM;
+  config.pin_pclk = PCLK_GPIO_NUM;
+  config.pin_vsync = VSYNC_GPIO_NUM;
+  config.pin_href = HREF_GPIO_NUM;
+  config.pin_sscb_sda = SIOD_GPIO_NUM;
+  config.pin_sscb_scl = SIOC_GPIO_NUM;
+  config.pin_pwdn = PWDN_GPIO_NUM;
+  config.pin_reset = RESET_GPIO_NUM;
+  config.xclk_freq_hz = 20000000;
+  config.frame_size = FRAMESIZE_UXGA;
+  config.pixel_format = PIXFORMAT_JPEG; // for streaming
+  //config.pixel_format = PIXFORMAT_RGB565; // for face detection/recognition
+  config.grab_mode = CAMERA_GRAB_WHEN_EMPTY;
+  config.fb_location = CAMERA_FB_IN_PSRAM;
+  config.jpeg_quality = 12;
+  config.fb_count = 1;
+  
+  // if PSRAM IC present, init with UXGA resolution and higher JPEG quality
+  //                      for larger pre-allocated frame buffer.
+  if(config.pixel_format == PIXFORMAT_JPEG){
+    if(psramFound()){
+      config.jpeg_quality = 10;
+      config.fb_count = 2;
+      config.grab_mode = CAMERA_GRAB_LATEST;
+    } else {
+      // Limit the frame size when PSRAM is not available
+      config.frame_size = FRAMESIZE_SVGA;
+      config.fb_location = CAMERA_FB_IN_DRAM;
+    }
+  } else {
+    // Best option for face detection/recognition
+    config.frame_size = FRAMESIZE_240X240;
+#if CONFIG_IDF_TARGET_ESP32S3
+    config.fb_count = 2;
+#endif
+  }
+
+#if defined(CAMERA_MODEL_ESP_EYE)
+  pinMode(13, INPUT_PULLUP);
+  pinMode(14, INPUT_PULLUP);
+#endif
+
+  // camera init
+  esp_err_t err = esp_camera_init(&config);
+  if (err != ESP_OK) {
+    Serial.printf("Camera init failed with error 0x%x", err);
+    return;
+  }
+
+  sensor_t * s = esp_camera_sensor_get();
+  // initial sensors are flipped vertically and colors are a bit saturated
+  if (s->id.PID == OV3660_PID) {
+    s->set_vflip(s, 1); // flip it back
+    s->set_brightness(s, 1); // up the brightness just a bit
+    s->set_saturation(s, -2); // lower the saturation
+  }
+  // drop down frame size for higher initial frame rate
+  if(config.pixel_format == PIXFORMAT_JPEG){
+    s->set_framesize(s, FRAMESIZE_QVGA);
+  }
+
+#if defined(CAMERA_MODEL_M5STACK_WIDE) || defined(CAMERA_MODEL_M5STACK_ESP32CAM)
+  s->set_vflip(s, 1);
+  s->set_hmirror(s, 1);
+#endif
+
+#if defined(CAMERA_MODEL_ESP32S3_EYE)
+  s->set_vflip(s, 1);
+#endif
+
+  WiFi.begin(ssid, password);
+  WiFi.setSleep(false);
+
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println("");
+  Serial.println("WiFi connected");
+
+  startCameraServer();
+
+  Serial.print("Camera Ready! Use 'http://");
+  Serial.print(WiFi.localIP());
+  Serial.println("' to connect");
+}
+
+void loop() {
+  // Do nothing. Everything is done in another task by the web server
+  delay(10000);
+}
+
+</code></pre> 
+
+And here is the camera working
+
+![image of camera](./camfootage1.png)
+
+
+![image of camera](./camfootage2.png)
+
+
+![image of camera](./camfootage3.png)
+
+
+A problem we ran into later was that while working in a place that is not the lab, there were struggles with which Wifi to connect to since Harvard University, Harvard Passpoint and Harvard Secure needed HarvardKey to access and our hotspots were causing small problems.
+
+But overall, this was a very fun experience to work with Aubrey - don't tell her I said this but she is extremely cool - and I think this system might help with my final project design of whether to feed your plants or not.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</xmp>
+</body>
+
+<script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" ></script>
+
+</html>
