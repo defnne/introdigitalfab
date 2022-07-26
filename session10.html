@@ -1,0 +1,158 @@
+session10.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>PHYSCI 70: Intro to Digital Fabrication </title>
+  <meta charset="utf-8">
+  <link href="./style.css" rel="stylesheet">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/arduino-light.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/arduino.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script> 
+
+</head>
+<body>
+
+
+<xmp theme="journal" style="display:none;">
+
+### Stepper Motors
+
+So this week we were tasked with using stepper motors to make a simple machine. I wanted to do a M&M dispenser because I saw a cocktail dispenser design but I couldn't do that - because of the lack of waterpumps- so I thought mixing the system up with M&M would be both simple and cute. Because of the lack of M&M in my dorm room, it is now a goldfish dispenser.
+
+The biggest challenger I faced with what wiring so I will mostly go into the most detail there. 
+Now before this session I always found myself really struggling with reading minimalistic circuit designs and going to a physical communiting diagram instead. So for this session I needed to be able to read a diagram correctly. So the first 4 times I tried it it did not work.
+
+So if anyone is having the same problem these could be the reason
+- In bigger sized breadboards the two sides might not be connected to the power so the system would not work
+- Soldering might be wrong especially when trying to extend stepper motor wires, for example with mine it was not working because of that reason as me and Suving looked two parts that I used to extend the wire were not connected so the best way to go is just try your best to use the wires themselves withour extensions
+- Checking the pins on your code is very important, which I used to always forget 
+- The more minimal the board is for wire length the better it is to see the problems.
+
+Also learning to read shematic and minimalistic diagrams as I was researching for my final project really helped so I think it is a useful skill to have.
+Here are some videos I watched to understand it better:
+
+https://www.youtube.com/watch?v=GHhcyH99inE&t=109s
+
+https://www.youtube.com/watch?v=9cps7Q_IrX0
+
+Also these series on Adafruit's Youtube - they have a youtube channel I was so surprised - is very good with learning the basics to everything if you are more of a visual learner instead of just reading the website.
+
+https://www.youtube.com/watch?v=pnf8ojsK6S4
+
+In the end with the help of Suvin the wiring was done correctly, I will put many pictures of it up here so anyone who has the STSPIN can understand better, since while learning to wire it correctly I ended up looking at my friend's wiring which is always a good way to learn.
+
+![image of step](./stepwire1.png)
+![image of step](./stepwire2.png)
+![image of step](./stepwire3.png)
+![image of step](./stepwire4.png)
+
+So the next part happened very fast because lab was closing. Basically I designed a little box that a graduated cup would fit in and turn.
+
+![image of step](./step3.png)
+
+It is 130 x 100 mm because the up has a radius of 35 mm.
+
+What I also learned from doing this project is to use your surrondings which is why I used so many random things that were in my dorm to make this project work.
+
+![image of step](./step2.png)
+![image of step](./step1.png)
+![image of step](./step4.png)
+
+Here is what the final idea looked like using what I had in the dorm, I realized that I needed the cup to be a bit lower so instead od 20 mm of space left on the sides of where the cup comes 15 or 10 might've been better.
+
+For the code I searched up one sided turns and I modified this code: https://forum.arduino.cc/t/stepper-motor-easy-driver-left-and-right-turn-code/433162/3
+
+Arduino Forum is a great place to interact with other users on certain problems as well, so I like going there before I code or when I run into a problem cause I've been realizing that most of he times other people faced the same problems and came up with solutions
+
+<pre><code class="language-arduino">
+
+#include <Stepper.h>
+int current_position = 0;
+const char direction_pin = 5;
+const char step_pin = 6;
+const char pot_pin = 0; //analog input 1
+#define Limit01 7  
+#define Limit02 8   
+void setup()
+{
+pinMode(Limit01, INPUT);
+pinMode(Limit02, INPUT);
+pinMode(direction_pin, OUTPUT);
+pinMode(step_pin, OUTPUT);
+pinMode(pot_pin, INPUT);
+}
+
+void loop()
+{
+int  readvalue = analogRead(pot_pin);
+readvalue = map(readvalue,0,1023,0,1151);
+if (readvalue > current_position+20)
+{
+ step_motor_forward();
+ current_position += 1;
+}
+else if (readvalue < current_position-20)
+{
+ step_motor_back();
+ current_position -= 1;
+}
+}//end of loop
+void step_motor_forward()
+{
+if (digitalRead(Limit02)) {}  
+    
+else {
+digitalWrite(direction_pin, LOW); // control in one side
+digitalWrite(step_pin, HIGH);
+digitalWrite(step_pin, LOW);
+}
+}
+
+void step_motor_back()
+{
+if (digitalRead(Limit01)) {} 
+    
+else {
+digitalWrite(direction_pin, HIGH); // control in reverse side, not working, only working in one side!
+digitalWrite(step_pin, LOW);
+digitalWrite(step_pin, HIGH);
+}
+
+</code></pre> 
+
+So the final product is a bit skeppy because I needed to modify a bit measurements but I couldn't go to the lab - because I was in a space between sleep and consciousness because of the heatwave - 
+
+<video controls>
+<source src="goldfish1.mp4" type="video/mp4">
+</video> 
+
+<video controls>
+<source src="goldfish2.mp4" type="video/mp4">
+</video> 
+
+ Ps. the book seen in the video to balance the system is pretty good, I highly recommend it to Wong Kar-Wai stans - my favorite director - 
+
+</xmp>
+</body>
+
+<script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" ></script>
+
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
