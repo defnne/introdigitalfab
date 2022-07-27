@@ -1,0 +1,134 @@
+session7.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>PHYSCI 70: Intro to Digital Fabrication </title>
+  <meta charset="utf-8">
+  <link href="./style.css" rel="stylesheet">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/arduino-light.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/arduino.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script> 
+
+</head>
+<body>
+
+
+<xmp theme="journal" style="display:none;">
+
+### Electronic Output Devices 
+
+For this session I decided to make a temprature alarm hence the heatwave that currently hit Cambridge and there was the highest recorded temprature for Boston ever.
+
+Now before I tell you about what actually happened with the project I should probably tell you about what happened before. So the story starts when I sat down to make this project and my Arduino IDE crashed, now this was a major problem because no matter what Suvin, Kassia and I tried the Arduino could not connect with the program and one time we accidentally almost burnt down a Arduino Metro. 
+
+Now the solution Kassia and I came up with was tp use Arduino Cloud but since I didn't have premium there was a limited amount of sketches that I could do so in the end that also stopped working. During this time I was also struggling to find an Arduino as well. 
+
+In the end what happened was that we ended up using the laser cutter computer to work my code.
+
+I will start with what went wrong with the code first.
+
+So the code I used was first insprired by - https://www.instructables.com/Temperature-Alarm-With-Arduino/ - this tutorial I found but for the reason's I will now get into that code did not end up working.
+So for anyone that is trying to follow a tutorial online: 
+- The libraries that they suggest you use may not end up working
+- If you can't find the library in Manage Library, for me searching the name on Github usually led me to the answer
+-But even the ones you find on GitHub might not work
+
+At this point I improvised, which was I needed to built in the data I needed from the library into the code.
+What I needed was a temprature reader so I modified Nathan's code into my code.
+One thing I recommend everyone checks before using a temprature sensor is to see if the math for the code matches the data bracket you are waiting for in the code. For example with mine, the serial monitor showed the exact number I needed but in Negatives so I added a -1 * (number) to the code.
+
+Here is the code I ended but using
+
+<pre><code class="language-arduino">
+
+int ThermistorPin = A0;
+int Vo;
+float R1 = 1000;
+float R2, T;
+float A = 3.354e-03;
+float B = 2.5698e-4;
+boolean alarmOnOff = false;
+int highTemp = 15;
+int lowTemp = 10;
+const int buzzer=11;
+
+
+void setup() {
+  Serial.begin(9600);    
+  // initalise digital pins for buzzer as outputs
+  pinMode(buzzer, OUTPUT); // buzzer      
+}
+
+void loop() {
+
+  Vo = analogRead(ThermistorPin);
+  R2 = R1 * 1/(1023.0 / (float)Vo - 1.0);  //Calculate resistance of thermistor from voltage divider math.
+  T = (1.0 / (A + B*log(R2/R1) ));  // Calculate temperature using datasheet formula.
+  T = -1*(T - 273.15);                   //Convert from Kelvin to Celcius.
+
+
+  Serial.print("Temperature: ");
+  Serial.print(T);
+  Serial.println("C");
+
+  if (T >= lowTemp || T <= highTemp){
+      noTone(buzzer); // buzzer off
+      delay(5000);
+  }
+ if (T > highTemp){
+      tone(buzzer, 500); // buzzer on }
+      delay(5000);
+      Serial.println("Buzzer");
+    }
+  if (T < lowTemp){
+      tone(buzzer, 500); // buzzer on }
+      delay(5000);
+    }
+ 
+}
+
+</code></pre> 
+
+For the wiring I had another problem which was that there were no buzzers left so Kassia and I had to solder a different type of buzzer to the breadbord. 
+
+![image of design](./buzzer.png)
+![image of design](./buzzer1.png)
+
+Here is the serial monitor
+
+![image of design](./monitor.png)
+
+![image of design](./buzzer1.png)
+
+<video controls>
+<source src="osi4.mp4" type="video/mp4">
+</video> 
+
+
+The second part of the assignment reqiured for oscilloscope data of my system so with the help of Suvin here is what we got.
+
+![image of design](./osi1.png)
+![image of design](./osi2.png)
+![image of design](./osi3.png)
+
+<video controls>
+<source src="osi5.mp4" type="video/mp4">
+</video> 
+
+<video controls>
+<source src="osi6.mp4" type="video/mp4">
+</video> 
+
+</xmp>
+</body>
+
+<script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" ></script>
+
+</html>
+
+
+
+
+
