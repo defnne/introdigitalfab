@@ -1,0 +1,120 @@
+session12.html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>PHYSCI 70: Intro to Digital Fabrication </title>
+  <meta charset="utf-8">
+  <link href="./style.css" rel="stylesheet">
+  <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/arduino-light.min.css">
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.8.0/highlight.min.js"></script>
+<script src="//cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/languages/arduino.min.js"></script>
+<script>hljs.initHighlightingOnLoad();</script> 
+
+</head>
+<body>
+
+
+<xmp theme="journal" style="display:none;">
+
+### The Final Project
+
+So, honestly this is kinda sad to look back at see myself here right now and before I started this class in the first place and seeing how much things changed in the way I looked at digital fabrication. Now I will tell the story of my final project.
+
+### The Why
+
+So most people would just ask me why I decided to do this and it was for my grandpa. Now it is a simplistic enough design but I think it would make my grandpa very very happy in the end to know this to make a automatic plant feeder because my grandma loves plants but since they've been getting older it has been getting harder and harder for them to carry the plants to their house in Çeşme from Izmir. And I think there are many people like that right now, especially old couples who could benefit from the design.
+
+
+### The How
+
+Okay so this part has many obsticles which I will tell you all in brutal honesty now. The weeknend of me building the project I got sick with a fever of 104 F and I could not leave my bed for hours and hours in a row. So most of my project was deeply held back and is now here because of the help of both our incredible TAs Suvin and Kassia and Nathan.
+
+The original idea was that the website designed to for AI that can diffirenciate between the health of the plant would be what commanded the pump work or not.
+
+Because the system for that failed on the my computer and chrome and it stopped my computer. It was not working but for anyone who wants to try
+
+https://github.com/webusb/arduino 
+
+Here is the github library.
+
+But in the end works as 
+
+ https://editor.p5js.org/gbose/full/2BN5HQYNK this website also as
+
+ https://defnne.github.io/introdigitalfab/final 
+
+ with the load link of https://teachablemachine.withgoogle.com/models/lcS9R4tNF/
+
+ This is the system that can tell whether your Lucky Bamboo is under-watered or healthy based on the color of the roots as I trained the machine.
+
+ <video controls>
+<source src="ai.mp4" type="video/mp4">
+</video> 
+
+Here is the system, as you can also try out with the link and show pictures of lucky bamboos.
+
+Here is the set-up of the gear system
+
+ <video controls>
+<source src="ai1.mp4" type="video/mp4">
+</video> 
+
+I don't have the system working here right now because my compuer died and it almost crashed after everything we put it through yesterday.
+
+The wiring and the system set-up is simple and could be followed through by https://www.arduino.cc/en/Tutorial/BuiltInExamples/Button and Nathan's website.
+
+and the code is
+
+<pre><code class="language-arduino">
+
+const int A1A = 8;  // define pin 3 for A-1A 
+const int A1B = 9;  // define pin 4 for A-1B 
+const int buttonPin = 11;
+
+int buttonState = 0;  
+
+void setup() {
+  Serial.begin(9600);
+  pinMode(A1A, OUTPUT);     // specify these pins as outputs
+  pinMode(A1B, OUTPUT);
+  digitalWrite(A1A, LOW);   // start with the motors off 
+  digitalWrite(A1B, LOW);
+  pinMode(buttonPin, INPUT_PULLUP);
+}
+
+void loop() {
+  // start the motor 
+  buttonState = digitalRead(buttonPin);
+  Serial.println(buttonState);
+  
+  if (buttonState == HIGH){        
+    digitalWrite(A1A, LOW);   
+    digitalWrite(A1B, LOW);
+    delay(100);              // allow the motor to run for 4 seconds
+  } else{
+
+    // stop the motor
+    digitalWrite(A1A, LOW);   // setting both pins LOW stops the motor 
+    digitalWrite(A1B, HIGH);   // redundant, but doesn't hurt 
+    delay(100);              // keep the motor off for 2 seconds
+  }
+
+}
+</code></pre> 
+
+Which can be contsructed by using Nathan's website and the Arduino Forum as I linked.
+
+![image of design](./ifinall.png)
+
+For the pump I used the gear pump design which can be found: https://www.thingiverse.com/thing:1696019
+
+
+
+
+</xmp>
+</body>
+
+<script src="https://strapdownjs.com/v/0.2/strapdown.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" ></script>
+
+</html>
